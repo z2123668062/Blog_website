@@ -10,7 +10,7 @@
         <div class="col-12">
             <br>
             <!-- 提交文章的表单 -->
-            <form method="post" action=".">
+            <form method="post" action="." enctype="multipart/form-data">
                 <!-- Django中需要POST数据的地方都必须有csrf_token -->
                 {% csrf_token %}
                 <!-- 文章标题 -->
@@ -19,6 +19,16 @@
                     <label for="title">文章标题</label>
                     <!-- 文本框 -->
                     <input type="text" class="form-control" id="title" name="title">
+                </div>
+                <!-- 文章封面图 -->
+                <div class="form-group">
+                    <label for="avatar">封面图</label>
+                    <input type="file" class="form-control-file" id="avatar" name="avatar">
+                </div>
+                <!-- 文章标签 -->
+                <div class="form-group">
+                    <label for="tags">标签</label>
+                    <input type="text" class="form-control" id="tags" name="tags">
                 </div>
                 <!-- 文章栏目 -->
                 <div class="form-group">
