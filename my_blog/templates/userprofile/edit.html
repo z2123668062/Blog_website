@@ -1,0 +1,128 @@
+{% extends "base.html" %} {% load static %}
+{% block title %} 用户信息 {% endblock title %}
+
+{% block content %}
+<style>
+    .avatar-upload-container {
+        margin: 20px 0;
+        padding: 20px;
+        border: 1px dashed #ccc;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+    }
+    .avatar-upload-container:hover {
+        border-color: #007bff;
+        box-shadow: 0 0 10px rgba(0,123,255,0.1);
+    }
+    .avatar-preview {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid #f8f9fa;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .custom-file-upload {
+        display: inline-block;
+        padding: 8px 16px;
+        cursor: pointer;
+        background-color: #007bff;
+        color: white;
+        border-radius: 4px;
+        transition: all 0.2s ease;
+        font-weight: 500;
+    }
+    .custom-file-upload:hover {
+        background-color: #0056b3;
+        transform: translateY(-1px);
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    #avatar {
+        display: none; /* 保持自定义按钮样式，隐藏原生控件 */
+    }
+    .file-name {
+        margin-left: 10px;
+        color: #6c757d;
+        font-size: 0.9rem;
+    }
+    .info-group {
+        margin-bottom: 1.5rem;
+    }
+    /* 新增：让预览图和上传按钮在表单内对齐 */
+    .form-avatar-wrap {
+        display: flex;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+    .form-avatar-preview {
+        margin-right: 20px;
+    }
+</style>
+
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <h3 style="margin: 20px 0;">个人信息</h3>
+            
+            <!-- 表单：包含所有需要提交的字段（包括头像上传） -->
+            <form method="post" action="." enctype="multipart/form-data">
+                {% csrf_token %}
+
+                <!-- 关键修改：头像预览+上传控件 移到form内部 -->
+                <div class="avatar-upload-container form-avatar-wrap">
+                    <!-- 头像预览区 -->
+                    <div class="form-avatar-preview">
+                        {% if profile.avatar %}
+                            <img src="{{ profile.avatar.url }}" class="avatar-preview" alt="用户头像">
+                        {% else %}
+                            <div class="avatar-preview d-flex align-items-center justify-content-center bg-light">
+                                <span style="color: #ccc;">暂无头像</span>
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- 上传控件（现在在form内，提交时能被捕获） -->
+                    <div>
+                        <label for="avatar" class="custom-file-upload">
+                            更换头像
+                        </label>
+                        <input type="file" id="avatar" name="avatar" accept="image/*">
+                        <span class="file-name" id="file-name">未选择文件</span>
+                        <p class="text-muted mt-2" style="font-size: 0.85rem;">支持JPG、PNG格式，建议尺寸200x200px</p>
+                    </div>
+                </div>
+
+                <!-- 其他表单字段（不变） -->
+                <div class="info-group">
+                    <label class="form-label">用户名</label>
+                    <input type="text" class="form-control" value="{{ user.username }}" disabled>
+                    <small class="text-muted">用户名不可修改</small>
+                </div>
+
+                <div class="info-group">
+                    <label for="phone" class="form-label">联系电话</label>
+                    <input type="text" class="form-control" id="phone" name="phone" 
+                           value="{{ profile.phone|default:'' }}" placeholder="请输入联系电话">
+                </div>
+
+                <div class="info-group">
+                    <label for="bio" class="form-label">个人简介</label>
+                    <textarea class="form-control" id="bio" name="bio" rows="5" 
+                              placeholder="请输入个人简介">{{ profile.bio|default:'' }}</textarea>
+                </div>
+
+                <button type="submit" class="btn btn-primary">保存修改</button>
+                <a href="/article/article-list/" class="btn btn-outline-secondary ml-2">取消</a>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 处理文件选择显示文件名（逻辑不变，确保正常工作）
+    document.getElementById('avatar').addEventListener('change', function(e) {
+        const fileName = e.target.files[0]?.name || '未选择文件';
+        document.getElementById('file-name').textContent = fileName;
+    });
+</script>
+{% endblock content %}
